@@ -1123,6 +1123,14 @@ async def mygroups_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def keep_alive_ping(context: ContextTypes.DEFAULT_TYPE):
     logger.info("📡 Keep-alive: Bot faol holatda...")
+    url = os.environ.get("RENDER_EXTERNAL_URL")
+    if url:
+        try:
+            import urllib.request
+            urllib.request.urlopen(url)
+            logger.info(f"Ping yuborildi: {url}")
+        except Exception as e:
+            logger.error(f"Ping xatosi: {e}")
 
 # ----------------------------------------------------------
 # 5. DUMMY HTTP SERVER (Render uchun)
