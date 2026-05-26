@@ -1126,9 +1126,10 @@ async def keep_alive_ping(context: ContextTypes.DEFAULT_TYPE):
     url = os.environ.get("RENDER_EXTERNAL_URL")
     if url:
         try:
-            import urllib.request
-            urllib.request.urlopen(url)
-            logger.info(f"Ping yuborildi: {url}")
+            import httpx
+            async with httpx.AsyncClient() as client:
+                resp = await client.get(url, timeout=10)
+                logger.info(f"Ping yuborildi: {url} (status={resp.status_code})")
         except Exception as e:
             logger.error(f"Ping xatosi: {e}")
 
@@ -1166,7 +1167,7 @@ def main():
     app = Application.builder().token(BOT_TOKEN).build()
 
     if app.job_queue:
-        app.job_queue.run_repeating(keep_alive_ping, interval=900, first=10)
+        app.job_queue.run_repeating(keep_alive_ping, interval=600, first=10)
 
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_cmd))
